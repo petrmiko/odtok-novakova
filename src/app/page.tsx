@@ -42,7 +42,7 @@ function HomePage() {
 	
 	const { data, isLoading, error } = useQuery({
 		queryKey: ['timeseries', dateRange[0], dateRange[1]],
-		queryFn: async () => {
+		queryFn: async (): Promise<TimeSeriesData[]> => {
 			const params = new URLSearchParams()
 			params.append('startDate', dateRange[0].toISOString())
 			params.append('endDate', dateRange[1].toISOString())
@@ -57,7 +57,7 @@ function HomePage() {
 
 	const { data: todayData, isLoading: isTodayLoading, error: todayError } = useQuery({
 		queryKey: ['today'],
-		queryFn: async () => {
+		queryFn: async (): Promise<TimeSeriesData[]> => {
 			const params = new URLSearchParams()
 			const startOfDay = new Date()
 			startOfDay.setHours(0, 0, 0, 0)
@@ -87,7 +87,7 @@ function HomePage() {
 			<main className="flex min-h-screen flex-col items-center p-8">
 				<h1 className="text-3xl font-bold mb-8">Odtok Novákova</h1>
 				{isTodayLoading && <p className="text-xl font-bold mb-8">Načítám poslední měření...</p>}
-				{!todayError && todayData?.length > 0 && <h2 className="text-xl font-bold mb-8">{todayData.at(-1).value}cm v {dateFormatter.format(new Date(todayData.at(-1).timestamp))}</h2>}
+				{!todayError && todayData && todayData?.length > 0 && <h2 className="text-xl font-bold mb-8">{todayData.at(-1)!.value}cm v {dateFormatter.format(new Date(todayData.at(-1)!.timestamp))}</h2>}
 				<DateRangePicker onDateRangeChange={handleDateRangeChange} />
 				{isLoading && <p>Načítám vývoj v čase...</p>}
 				{error && (
