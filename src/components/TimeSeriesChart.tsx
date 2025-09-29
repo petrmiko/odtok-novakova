@@ -8,6 +8,7 @@ import {
 	ResponsiveContainer,
 	Label,
 } from 'recharts'
+import { getDateFormatters, getNumberFormatter, getTranslations } from '@/utils/formatters'
 
 interface TimeSeriesData {
 	timestamp: string
@@ -19,33 +20,9 @@ interface TimeSeriesChartProps {
 }
 
 export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
-	const browserLocale = navigator.language.toLowerCase()
-	const translations = {
-		label: browserLocale.startsWith('cs') ? 'Hladina (cm)' : 'Height (cm)',
-		tooltip: browserLocale.startsWith('cs') ? 'Hladina' : 'Height',
-	}
-
-	const xAxisFormatter = new Intl.DateTimeFormat(undefined, {
-		month: 'numeric',
-		day: 'numeric',
-		hour: 'numeric',
-		minute: 'numeric',
-	})
-
-	const tooltipFormatter = new Intl.DateTimeFormat(undefined, {
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric',
-		hour: 'numeric',
-		minute: 'numeric',
-		second: 'numeric',
-		weekday: 'short',
-	})
-
-	const numberFormatter = new Intl.NumberFormat(undefined, {
-		minimumFractionDigits: 1,
-		maximumFractionDigits: 1,
-	})
+	const translations = getTranslations()
+	const { xAxisFormatter, tooltipFormatter } = getDateFormatters()
+	const numberFormatter = getNumberFormatter()
 
 	const formattedData = data.map((item) => {
 		const date = new Date(item.timestamp)
@@ -81,12 +58,13 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 	}
 
 	return (
-		<div className="w-full h-[400px]">
-			<ResponsiveContainer width="100%" height="100%">
-				<LineChart
-					data={formattedData}
-					margin={{ top: 10, right: 30, left: 60, bottom: 20 }}
-				>
+		<div className="w-full">
+			<div className="h-[400px]">
+				<ResponsiveContainer width="100%" height="100%">
+					<LineChart
+						data={formattedData}
+						margin={{ top: 10, right: 30, left: 60, bottom: 20 }}
+					>
 					<CartesianGrid strokeDasharray="3 3" />
 					<XAxis
 						dataKey="timestamp"
@@ -115,6 +93,7 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 					/>
 				</LineChart>
 			</ResponsiveContainer>
+			</div>
 		</div>
 	)
 }

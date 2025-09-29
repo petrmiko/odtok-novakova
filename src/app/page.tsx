@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import TimeSeriesChart from '@/components/TimeSeriesChart'
 import DateRangePicker from '@/components/DateRangePicker'
+import StatsTable from '@/components/StatsTable'
+import { getDateFormatters, getNumberFormatter } from '@/utils/formatters'
 
 interface TimeSeriesData {
 	timestamp: string
@@ -59,6 +61,11 @@ export default function Home() {
 			{!loading && !error && (
 				<div className="w-full max-w-6xl">
 					<TimeSeriesChart data={data} />
+					<StatsTable 
+						data={data}
+						tooltipFormatter={getDateFormatters().tooltipFormatter}
+						numberFormatter={getNumberFormatter()}
+					/>
 				</div>
 			)}
 		</main>
