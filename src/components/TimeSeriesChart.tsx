@@ -29,7 +29,7 @@ const getTranslations = () => {
 
 export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 	const translations = getTranslations()
-	const { xAxisFormatter, tooltipFormatter } = getDateFormatters()
+	const { xAxisFormatter, dateFormatter } = getDateFormatters()
 	const numberFormatter = getNumberFormatter()
 
 	const formattedData = data.map((item) => {
@@ -51,7 +51,7 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 	const CustomTooltip = ({ active, payload }: TooltipProps) => {
 		if (active && payload && payload.length) {
 			const date = new Date(payload[0].payload.originalTimestamp)
-			const formattedDate = tooltipFormatter.format(date)
+			const formattedDate = dateFormatter.format(date)
 
 			return (
 				<div className="bg-background p-2 border rounded shadow text-foreground">

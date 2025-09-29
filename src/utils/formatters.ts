@@ -6,7 +6,7 @@ export const getDateFormatters = () => {
 		minute: 'numeric',
 	})
 
-	const tooltipFormatter = new Intl.DateTimeFormat(undefined, {
+	const dateFormatter = new Intl.DateTimeFormat(undefined, {
 		year: 'numeric',
 		month: 'long',
 		day: 'numeric',
@@ -16,7 +16,7 @@ export const getDateFormatters = () => {
 		weekday: 'short',
 	})
 
-	return { xAxisFormatter, tooltipFormatter }
+	return { xAxisFormatter, dateFormatter }
 }
 
 export const getNumberFormatter = () => {
