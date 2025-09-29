@@ -73,7 +73,7 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 						data={formattedData}
 						margin={{ left: 10, right: 10, top: 10, bottom: 10 }}
 					>
-					<CartesianGrid strokeDasharray="3 3" />
+					<CartesianGrid strokeDasharray="3 3" stroke="#444"/>
 					<XAxis
 						dataKey="timestamp"
 						angle={-45}
