@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
+import { ThemeProvider, createTheme, useMediaQuery } from '@mui/material'
 import TimeSeriesChart from '@/components/TimeSeriesChart'
 import DateRangePicker from '@/components/DateRangePicker'
 import StatsTable from '@/components/StatsTable'
@@ -12,6 +13,18 @@ interface TimeSeriesData {
 }
 
 export default function Home() {
+	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+	
+	const theme = useMemo(
+		() =>
+			createTheme({
+				palette: {
+					mode: prefersDarkMode ? 'dark' : 'light',
+				},
+			}),
+		[prefersDarkMode]
+	)
+
 	const [data, setData] = useState<TimeSeriesData[]>([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
@@ -53,21 +66,23 @@ export default function Home() {
 	}
 
 	return (
-		<main className="flex min-h-screen flex-col items-center p-8">
-			<h1 className="text-3xl font-bold mb-8">Odtok Novákova</h1>
-			<DateRangePicker onDateRangeChange={handleDateRangeChange} />
-			{loading && <p>Loading...</p>}
-			{error && <p className="text-red-500">Error: {error}</p>}
-			{!loading && !error && (
-				<div className="w-full max-w-6xl">
-					<TimeSeriesChart data={data} />
-					<StatsTable 
-						data={data}
-						tooltipFormatter={getDateFormatters().tooltipFormatter}
-						numberFormatter={getNumberFormatter()}
-					/>
-				</div>
-			)}
-		</main>
+		<ThemeProvider theme={theme}>
+			<main className="flex min-h-screen flex-col items-center p-8">
+				<h1 className="text-3xl font-bold mb-8">Odtok Novákova</h1>
+				<DateRangePicker onDateRangeChange={handleDateRangeChange} />
+				{loading && <p>Loading...</p>}
+				{error && <p className="text-red-500">Error: {error}</p>}
+				{!loading && !error && (
+					<div className="w-full max-w-6xl">
+						<TimeSeriesChart data={data} />
+						<StatsTable 
+							data={data}
+							tooltipFormatter={getDateFormatters().tooltipFormatter}
+							numberFormatter={getNumberFormatter()}
+						/>
+					</div>
+				)}
+			</main>
+		</ThemeProvider>
 	)
 }

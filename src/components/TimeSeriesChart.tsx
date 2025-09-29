@@ -8,7 +8,7 @@ import {
 	ResponsiveContainer,
 	Label,
 } from 'recharts'
-import { getDateFormatters, getNumberFormatter, getTranslations } from '@/utils/formatters'
+import { getDateFormatters, getNumberFormatter } from '@/utils/formatters'
 
 interface TimeSeriesData {
 	timestamp: string
@@ -17,6 +17,14 @@ interface TimeSeriesData {
 
 interface TimeSeriesChartProps {
 	data: TimeSeriesData[]
+}
+
+const getTranslations = () => {
+	const browserLocale = navigator.language.toLowerCase()
+	return {
+		label: browserLocale.startsWith('cs') ? 'Hladina (cm)' : 'Height (cm)',
+		tooltip: browserLocale.startsWith('cs') ? 'Hladina' : 'Height',
+	}
 }
 
 export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
@@ -63,7 +71,7 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 				<ResponsiveContainer width="100%" height="100%">
 					<LineChart
 						data={formattedData}
-						margin={{ top: 10, right: 30, left: 60, bottom: 20 }}
+						margin={{ left: 10, right: 10, top: 10, bottom: 10 }}
 					>
 					<CartesianGrid strokeDasharray="3 3" />
 					<XAxis
@@ -74,7 +82,7 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 						interval="preserveStartEnd"
 					/>
 					<YAxis
-						width={90}
+						width={80}
 						tickFormatter={(value) => `${numberFormatter.format(value)} cm`}
 					>
 						<Label
@@ -87,7 +95,6 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 					<Line
 						type="monotone"
 						dataKey="value"
-						stroke="#8884d8"
 						strokeWidth={2}
 						dot={{ r: 2 }}
 					/>

@@ -24,12 +24,5 @@ export const getNumberFormatter = () => {
 		minimumFractionDigits: 1,
 		maximumFractionDigits: 1,
 	})
-}
 
-export const getTranslations = () => {
-	const browserLocale = navigator.language.toLowerCase()
-	return {
-		label: browserLocale.startsWith('cs') ? 'Hladina (cm)' : 'Height (cm)',
-		tooltip: browserLocale.startsWith('cs') ? 'Hladina' : 'Height',
-	}
 }

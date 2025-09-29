@@ -1,9 +1,8 @@
 import { useState, useMemo } from 'react'
-import DatePicker from 'react-datepicker'
-import { registerLocale, setDefaultLocale } from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-import '@/app/datepicker.css'
-
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { Stack } from '@mui/material'
 import { cs, enUS, Locale } from 'date-fns/locale'
 
 const localeMap: { [key: string]: Locale } = {
@@ -20,16 +19,9 @@ export default function DateRangePicker({
 }: DateRangePickerProps) {
 	const userLocale = useMemo(() => {
 		const browserLocale = navigator.language.toLowerCase()
-
 		const languageCode = browserLocale.split('-')[0]
-		if (languageCode in localeMap) {
-			registerLocale(browserLocale, localeMap[languageCode])
-			return browserLocale
-		}
-		return 'en'
+		return languageCode in localeMap ? browserLocale : 'en'
 	}, [])
-
-	setDefaultLocale(userLocale)
 
 	const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
 		new Date(Date.now() - 24 * 3600000),
@@ -42,62 +34,56 @@ export default function DateRangePicker({
 		onDateRangeChange(update[0], update[1])
 	}
 
-	const dateFormat = useMemo(() => {
-		if (userLocale.startsWith('en')) {
-			return 'MM/dd/yyyy h:mm aa'
-		} else {
-			return 'dd.MM.yyyy HH:mm'
-		}
-	}, [userLocale])
-
-	const placeholderText = useMemo(() => {
-		const translations: { [key: string]: string } = {
-			cs: 'Vyberte časové rozmezí',
-			en: 'Select date range',
+	const labels = useMemo(() => {
+		const translations: { [key: string]: { start: string, end: string } } = {
+			cs: {
+				start: 'Od',
+				end: 'Do'
+			},
+			en: {
+				start: 'From',
+				end: 'To'
+			}
 		}
 
 		const languageCode = userLocale.split('-')[0]
 		return translations[languageCode] || translations['en']
 	}, [userLocale])
 
-	const label = useMemo(() => {
-		const translations: { [key: string]: string } = {
-			cs: 'Časové rozmezí:',
-			en: 'Date Range:',
-		}
+	const handleStartDateChange = (date: Date | null) => {
+		const newRange: [Date | null, Date | null] = [date, dateRange[1]]
+		handleDateChange(newRange)
+	}
 
-		const languageCode = userLocale.split('-')[0]
-		return translations[languageCode] || translations['en']
-	}, [userLocale])
-
-	const timeCaption = useMemo(() => {
-		const translations: { [key: string]: string } = {
-			cs: 'Čas',
-			en: 'Time',
-		}
-
-		const languageCode = userLocale.split('-')[0]
-		return translations[languageCode] || translations['en']
-	}, [userLocale])
+	const handleEndDateChange = (date: Date | null) => {
+		const newRange: [Date | null, Date | null] = [dateRange[0], date]
+		handleDateChange(newRange)
+	}
 
 	return (
-		<div className="flex items-center gap-4 mb-6">
-			<label className="text-sm font-medium">{label}</label>
-			<div className="relative">
-				<DatePicker
-					selectsRange={true}
-					startDate={startDate}
-					endDate={endDate}
-					onChange={handleDateChange}
-					className="px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-					locale={userLocale}
-					dateFormat={dateFormat}
-					timeIntervals={30}
-					timeFormat={userLocale.startsWith('en') ? 'h:mm aa' : 'HH:mm'}
-					placeholderText={placeholderText}
-					timeCaption={timeCaption}
-				/>
+		<LocalizationProvider 
+			dateAdapter={AdapterDateFns} 
+			adapterLocale={localeMap[userLocale.split('-')[0]]}
+		>
+			<div className="flex items-center gap-4 mb-6">
+				<Stack direction="row" spacing={2} flexWrap={"wrap"} useFlexGap>
+					<DateTimePicker
+						label={labels.start}
+						value={startDate}
+						onChange={handleStartDateChange}
+						maxDate={endDate || undefined}
+						closeOnSelect
+					/>
+					<DateTimePicker
+						label={labels.end}
+						value={endDate}
+						onChange={handleEndDateChange}
+						minDate={startDate || undefined}
+						closeOnSelect
+						disableFuture
+					/>
+				</Stack>
 			</div>
-		</div>
+		</LocalizationProvider>
 	)
 }
