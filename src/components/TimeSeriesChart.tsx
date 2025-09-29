@@ -1,0 +1,128 @@
+import {
+	LineChart,
+	Line,
+	XAxis,
+	YAxis,
+	CartesianGrid,
+	Tooltip,
+	ResponsiveContainer,
+	Label,
+} from 'recharts'
+
+interface TimeSeriesData {
+	timestamp: string
+	value: number
+}
+
+interface TimeSeriesChartProps {
+	data: TimeSeriesData[]
+}
+
+export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
+	const browserLocale = navigator.language.toLowerCase()
+	const translations = {
+		label: browserLocale.startsWith('cs') ? 'Hladina (cm)' : 'Height (cm)',
+		tooltip: browserLocale.startsWith('cs') ? 'Hladina' : 'Height',
+	}
+
+	const xAxisFormatter = new Intl.DateTimeFormat(undefined, {
+		month: 'numeric',
+		day: 'numeric',
+		hour: 'numeric',
+		minute: 'numeric',
+	})
+
+	const tooltipFormatter = new Intl.DateTimeFormat(undefined, {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+		hour: 'numeric',
+		minute: 'numeric',
+		second: 'numeric',
+		weekday: 'short',
+	})
+
+	const numberFormatter = new Intl.NumberFormat(undefined, {
+		minimumFractionDigits: 1,
+		maximumFractionDigits: 1,
+	})
+
+	const formattedData = data.map((item) => {
+		const date = new Date(item.timestamp)
+		return {
+			...item,
+			originalTimestamp: item.timestamp,
+			timestamp: xAxisFormatter.format(date),
+		}
+	})
+
+	interface TooltipProps {
+		active?: boolean
+		payload?: Array<{
+			value: number
+			payload: TimeSeriesData & { originalTimestamp: string }
+		}>
+	}
+	const CustomTooltip = ({ active, payload }: TooltipProps) => {
+		if (active && payload && payload.length) {
+			const date = new Date(payload[0].payload.originalTimestamp)
+			const formattedDate = tooltipFormatter.format(date)
+
+			return (
+				<div className="bg-background p-2 border rounded shadow text-foreground">
+					<p className="text-sm opacity-90">{formattedDate}</p>
+					<p className="text-sm font-bold">
+						{translations.tooltip}: {numberFormatter.format(payload[0].value)} cm
+					</p>
+				</div>
+			)
+		}
+		return null
+	}
+
+	return (
+		<div className="w-full h-[400px]">
+			<ResponsiveContainer width="100%" height="100%">
+				<LineChart
+					data={formattedData}
+					margin={{ top: 10, right: 30, left: 60, bottom: 20 }}
+				>
+					<CartesianGrid strokeDasharray="3 3" />
+					<XAxis
+						dataKey="timestamp"
+						angle={-45}
+						textAnchor="end"
+						height={70}
+						interval="preserveStartEnd"
+					/>
+					<YAxis
+						width={90}
+						tickFormatter={(value) => `${numberFormatter.format(value)} cm`}
+					>
+						<Label
+							value={translations.label}
+							angle={-90}
+							position="insideLeft"
+							offset={20}
+							style={{
+								textAnchor: 'middle',
+								fill: '#666666',
+								fontSize: '14px',
+								fontFamily: 'inherit',
+							}}
+							dx={-30}
+						/>
+					</YAxis>
+					<Tooltip content={<CustomTooltip />} />
+					<Line
+						type="monotone"
+						dataKey="value"
+						stroke="#8884d8"
+						strokeWidth={2}
+						dot={{ r: 2 }}
+					/>
+				</LineChart>
+			</ResponsiveContainer>
+		</div>
+	)
+}
