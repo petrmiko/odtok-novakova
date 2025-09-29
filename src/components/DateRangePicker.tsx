@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react'
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { Stack } from '@mui/material'
 import { cs, enUS, Locale } from 'date-fns/locale'
+import { startOfDay, endOfDay } from 'date-fns'
 
 const localeMap: { [key: string]: Locale } = {
 	cs: cs,
@@ -24,8 +25,8 @@ export default function DateRangePicker({
 	}, [])
 
 	const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
-		new Date(Date.now() - 24 * 3600000),
-		new Date(),
+		startOfDay(new Date(Date.now() - 24 * 3600000)),
+		endOfDay(new Date()),
 	])
 	const [startDate, endDate] = dateRange
 
@@ -51,12 +52,14 @@ export default function DateRangePicker({
 	}, [userLocale])
 
 	const handleStartDateChange = (date: Date | null) => {
-		const newRange: [Date | null, Date | null] = [date, dateRange[1]]
+		const startDateWithTime = date ? startOfDay(date) : null
+		const newRange: [Date | null, Date | null] = [startDateWithTime, dateRange[1]]
 		handleDateChange(newRange)
 	}
 
 	const handleEndDateChange = (date: Date | null) => {
-		const newRange: [Date | null, Date | null] = [dateRange[0], date]
+		const endDateWithTime = date ? endOfDay(date) : null
+		const newRange: [Date | null, Date | null] = [dateRange[0], endDateWithTime]
 		handleDateChange(newRange)
 	}
 
@@ -67,14 +70,14 @@ export default function DateRangePicker({
 		>
 			<div className="flex items-center gap-4 mb-6">
 				<Stack direction="row" spacing={2} flexWrap={"wrap"} useFlexGap>
-					<DateTimePicker
+					<DatePicker
 						label={labels.start}
 						value={startDate}
 						onChange={handleStartDateChange}
 						maxDate={endDate || undefined}
 						closeOnSelect
 					/>
-					<DateTimePicker
+					<DatePicker
 						label={labels.end}
 						value={endDate}
 						onChange={handleEndDateChange}
