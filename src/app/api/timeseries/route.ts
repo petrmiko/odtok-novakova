@@ -20,7 +20,7 @@ interface TimeSeriesItem {
 	devID: string
 	data: DeviceData
 	created: {
-		ts: string
+		ts: string // provides time with Z UTC suffix but is NOT in UTC
 		os: number
 		by: string
 		ep: number
@@ -92,7 +92,7 @@ export async function GET(request: Request) {
 	}
 
 	const chartData = response.data.map((item: TimeSeriesItem) => ({
-		timestamp: item.created.ts,
+		timestamp: item.data.lastCommunicationTime,
 		value: item.data.waterHeight,
 	}))
 
