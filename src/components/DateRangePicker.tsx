@@ -90,10 +90,8 @@ export default function DateRangePicker({
 					endDate={endDate}
 					onChange={handleDateChange}
 					className="px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-					calendarClassName="datepicker-calendar"
 					locale={userLocale}
 					dateFormat={dateFormat}
-					showTimeSelect
 					timeIntervals={30}
 					timeFormat={userLocale.startsWith('en') ? 'h:mm aa' : 'HH:mm'}
 					placeholderText={placeholderText}

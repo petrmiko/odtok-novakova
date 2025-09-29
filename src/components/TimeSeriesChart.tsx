@@ -102,15 +102,7 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 						<Label
 							value={translations.label}
 							angle={-90}
-							position="insideLeft"
-							offset={20}
-							style={{
-								textAnchor: 'middle',
-								fill: '#666666',
-								fontSize: '14px',
-								fontFamily: 'inherit',
-							}}
-							dx={-30}
+							position="left"
 						/>
 					</YAxis>
 					<Tooltip content={<CustomTooltip />} />
