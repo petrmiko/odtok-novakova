@@ -34,6 +34,7 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 
 	const formattedData = data.map((item) => {
 		const date = new Date(item.timestamp)
+		console.log(date, item)
 		return {
 			...item,
 			originalTimestamp: item.timestamp,

@@ -91,8 +91,10 @@ export async function GET(request: Request) {
 		return NextResponse.json(response, { status: 500 })
 	}
 
+	console.log('Fetched data items:', response.data)
+
 	const chartData = response.data.map((item: TimeSeriesItem) => ({
-		timestamp: item.data.lastCommunicationTime,
+		timestamp: item.created.ts.replace('Z', ''),  // provides time with Z UTC suffix but is NOT in UTC
 		value: item.data.waterHeight,
 	}))
 
