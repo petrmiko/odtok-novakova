@@ -24,7 +24,7 @@ export default function DateRangePicker({
 		return languageCode in localeMap ? browserLocale : 'en'
 	}, [])
 
-	const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
+	const [dateRange, setDateRange] = useState<[Date | null, Date | null]>(() => [
 		startOfDay(new Date(Date.now() - 24 * 3600000)),
 		endOfDay(new Date()),
 	])
@@ -69,7 +69,7 @@ export default function DateRangePicker({
 			adapterLocale={localeMap[userLocale.split('-')[0]]}
 		>
 			<div className="flex items-center gap-4 mb-6">
-				<Stack direction="row" spacing={2} flexWrap={"wrap"} useFlexGap>
+				<Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
 					<DatePicker
 						label={labels.start}
 						value={startDate}

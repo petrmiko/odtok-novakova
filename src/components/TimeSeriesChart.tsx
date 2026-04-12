@@ -19,6 +19,34 @@ interface TimeSeriesChartProps {
 	data: TimeSeriesData[]
 }
 
+interface CustomTooltipProps {
+	active?: boolean
+	payload?: Array<{
+		value: number
+		payload: TimeSeriesData & { originalTimestamp: string }
+	}>
+	tooltipLabel: string
+	dateFormatter: Intl.DateTimeFormat
+	numberFormatter: Intl.NumberFormat
+}
+
+function CustomTooltip({ active, payload, tooltipLabel, dateFormatter, numberFormatter }: CustomTooltipProps) {
+	if (active && payload && payload.length) {
+		const date = new Date(payload[0].payload.originalTimestamp)
+		const formattedDate = dateFormatter.format(date)
+
+		return (
+			<div className="bg-background p-2 border rounded shadow text-foreground">
+				<p className="text-sm opacity-90">{formattedDate}</p>
+				<p className="text-sm font-bold">
+					{tooltipLabel}: {numberFormatter.format(payload[0].value)} cm
+				</p>
+			</div>
+		)
+	}
+	return null
+}
+
 const getTranslations = () => {
 	const browserLocale = navigator.language.toLowerCase()
 	return {
@@ -40,30 +68,6 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 			timestamp: xAxisFormatter.format(date),
 		}
 	})
-
-	interface TooltipProps {
-		active?: boolean
-		payload?: Array<{
-			value: number
-			payload: TimeSeriesData & { originalTimestamp: string }
-		}>
-	}
-	const CustomTooltip = ({ active, payload }: TooltipProps) => {
-		if (active && payload && payload.length) {
-			const date = new Date(payload[0].payload.originalTimestamp)
-			const formattedDate = dateFormatter.format(date)
-
-			return (
-				<div className="bg-background p-2 border rounded shadow text-foreground">
-					<p className="text-sm opacity-90">{formattedDate}</p>
-					<p className="text-sm font-bold">
-						{translations.tooltip}: {numberFormatter.format(payload[0].value)} cm
-					</p>
-				</div>
-			)
-		}
-		return null
-	}
 
 	return (
 		<div className="w-full">
@@ -91,7 +95,7 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 							position="left"
 						/>
 					</YAxis>
-					<Tooltip content={<CustomTooltip />} />
+					<Tooltip content={<CustomTooltip tooltipLabel={translations.tooltip} dateFormatter={dateFormatter} numberFormatter={numberFormatter} />} />
 					<Line
 						type="monotone"
 						dataKey="value"

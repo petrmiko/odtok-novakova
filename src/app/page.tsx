@@ -35,10 +35,10 @@ function HomePage() {
 		[prefersDarkMode]
 	)
 
-	const initialStartDate = new Date(Date.now() - 24 * 3600000)
-	const initialEndDate = new Date()
-	
-	const [dateRange, setDateRange] = useState<[Date, Date]>([initialStartDate, initialEndDate])
+	const [dateRange, setDateRange] = useState<[Date, Date]>(() => [
+		new Date(Date.now() - 24 * 3600000),
+		new Date(),
+	])
 	
 	const { data, isLoading, error } = useQuery({
 		queryKey: ['timeseries', dateRange[0], dateRange[1]],
