@@ -6,6 +6,8 @@ import { Chip, Stack } from '@mui/material'
 import { cs, enUS, Locale } from 'date-fns/locale'
 import { startOfDay, endOfDay, subWeeks, subMonths, subYears } from 'date-fns'
 
+const firstMeasurementDate = new Date(2025, 0, 1)
+
 const presets: { label: string; start: (now: Date) => Date }[] = [
 	{ label: 'Dnes', start: (now) => now },
 	{ label: 'Poslední týden', start: (now) => subWeeks(now, 1) },
@@ -97,6 +99,7 @@ export default function DateRangePicker({ onDateRangeChange }: DateRangePickerPr
 						label={labels.start}
 						value={startDate}
 						onChange={handleStartDateChange}
+						minDate={firstMeasurementDate}
 						maxDate={endDate || undefined}
 						closeOnSelect
 					/>
@@ -104,7 +107,7 @@ export default function DateRangePicker({ onDateRangeChange }: DateRangePickerPr
 						label={labels.end}
 						value={endDate}
 						onChange={handleEndDateChange}
-						minDate={startDate || undefined}
+						minDate={startDate || firstMeasurementDate}
 						closeOnSelect
 						disableFuture
 					/>
