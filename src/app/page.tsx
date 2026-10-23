@@ -3,6 +3,11 @@
 import { useMemo, useState } from 'react'
 import { ThemeProvider, createTheme, useMediaQuery } from '@mui/material'
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
+import { formatDistanceToNow } from 'date-fns'
+import { cs } from 'date-fns/locale'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import TrendingDownIcon from '@mui/icons-material/TrendingDown'
+import TrendingFlatIcon from '@mui/icons-material/TrendingFlat'
 import TimeSeriesChart from '@/components/TimeSeriesChart'
 import DateRangePicker from '@/components/DateRangePicker'
 import StatsTable from '@/components/StatsTable'
@@ -30,6 +35,7 @@ function HomePage() {
 			createTheme({
 				palette: {
 					mode: prefersDarkMode ? 'dark' : 'light',
+					primary: { main: '#0ea5e9' },
 				},
 			}),
 		[prefersDarkMode],
@@ -61,6 +67,7 @@ function HomePage() {
 		error: todayError,
 	} = useQuery({
 		queryKey: ['today'],
+		refetchInterval: 5 * 60000,
 		queryFn: async (): Promise<TimeSeriesData[]> => {
 			const params = new URLSearchParams()
 			const startOfDay = new Date()
@@ -82,35 +89,71 @@ function HomePage() {
 	}
 
 	const { dateFormatter } = getDateFormatters()
+	const numberFormatter = getNumberFormatter()
+	const latest = todayData?.at(-1)
+	const previous = todayData?.at(-2)
+	const change = latest && previous ? latest.value - previous.value : 0
+	const TrendIcon = change > 0 ? TrendingUpIcon : change < 0 ? TrendingDownIcon : TrendingFlatIcon
+	const trendColor = change > 0 ? 'text-amber-500' : change < 0 ? 'text-emerald-500' : 'text-muted'
 
 	return (
 		<ThemeProvider theme={theme}>
-			<main className="flex min-h-screen flex-col items-center p-8">
-				<h1 className="text-3xl font-bold mb-8">Odtok Novákova</h1>
-				{isTodayLoading && <p className="text-xl font-bold mb-8">Načítám poslední měření...</p>}
-				{!todayError && todayData && todayData?.length > 0 && (
-					<h2 className="text-xl font-bold mb-8">
-						{todayData.at(-1)!.value}cm v{' '}
-						{dateFormatter.format(new Date(todayData.at(-1)!.timestamp))}
-					</h2>
-				)}
-				<DateRangePicker onDateRangeChange={handleDateRangeChange} />
-				{isLoading && <p>Načítám vývoj v čase...</p>}
-				{error && (
-					<p className="text-red-500">
-						Error: {error instanceof Error ? error.message : 'An error occurred'}
-					</p>
-				)}
-				{!isLoading && !error && data && (
-					<div className="w-full max-w-6xl">
-						<TimeSeriesChart data={data} />
-						<StatsTable
-							data={data}
-							tooltipFormatter={getDateFormatters().dateFormatter}
-							numberFormatter={getNumberFormatter()}
-						/>
-					</div>
-				)}
+			<main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-4 py-8 sm:px-8">
+				<header>
+					<h1 className="text-3xl font-bold tracking-tight">Odtok Novákova</h1>
+					<p className="text-muted">Hladina vody v odtokovém příkopu, Dobřany</p>
+				</header>
+
+				<section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+					<p className="text-sm font-medium uppercase tracking-wide text-muted">Aktuální hladina</p>
+					{isTodayLoading && <p className="mt-2 text-xl">Načítám poslední měření...</p>}
+					{todayError && <p className="mt-2 text-red-500">Poslední měření se nepodařilo načíst</p>}
+					{!isTodayLoading && !todayError && !latest && (
+						<p className="mt-2 text-xl">Dnes zatím žádné měření</p>
+					)}
+					{latest && (
+						<>
+							<div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-2">
+								<p className="text-6xl font-bold tabular-nums">
+									{numberFormatter.format(latest.value)}
+									<span className="text-2xl font-medium text-muted"> cm</span>
+								</p>
+								{previous && (
+									<p className={`flex items-center gap-1 font-medium ${trendColor}`}>
+										<TrendIcon fontSize="small" />
+										{change > 0 && '+'}
+										{numberFormatter.format(change)} cm od předchozího měření
+									</p>
+								)}
+							</div>
+							<p className="mt-2 text-sm text-muted">
+								{formatDistanceToNow(new Date(latest.timestamp), { addSuffix: true, locale: cs })} ·{' '}
+								{dateFormatter.format(new Date(latest.timestamp))}
+							</p>
+						</>
+					)}
+				</section>
+
+				<section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+					<h2 className="mb-4 text-lg font-semibold">Vývoj v čase</h2>
+					<DateRangePicker onDateRangeChange={handleDateRangeChange} />
+					{isLoading && <p>Načítám vývoj v čase...</p>}
+					{error && (
+						<p className="text-red-500">
+							Data se nepodařilo načíst: {error instanceof Error ? error.message : 'neznámá chyba'}
+						</p>
+					)}
+					{!isLoading && !error && data && (
+						<>
+							<TimeSeriesChart data={data} />
+							<StatsTable
+								data={data}
+								tooltipFormatter={dateFormatter}
+								numberFormatter={numberFormatter}
+							/>
+						</>
+					)}
+				</section>
 			</main>
 		</ThemeProvider>
 	)

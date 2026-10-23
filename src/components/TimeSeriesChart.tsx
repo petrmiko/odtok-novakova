@@ -1,6 +1,6 @@
 import {
-	LineChart,
-	Line,
+	AreaChart,
+	Area,
 	XAxis,
 	YAxis,
 	CartesianGrid,
@@ -42,7 +42,7 @@ function CustomTooltip({
 		const formattedDate = dateFormatter.format(date)
 
 		return (
-			<div className="bg-background p-2 border rounded shadow text-foreground">
+			<div className="rounded-lg border border-border bg-card p-2 text-foreground shadow-lg">
 				<p className="text-sm opacity-90">{formattedDate}</p>
 				<p className="text-sm font-bold">
 					{tooltipLabel}: {numberFormatter.format(payload[0].value)} cm
@@ -77,10 +77,16 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 
 	return (
 		<div className="w-full">
-			<div className="h-[400px]">
+			<div className="h-80 sm:h-100">
 				<ResponsiveContainer width="100%" height="100%">
-					<LineChart data={formattedData} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
-						<CartesianGrid strokeDasharray="3 3" stroke="#444" />
+					<AreaChart data={formattedData} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
+						<defs>
+							<linearGradient id="waterFill" x1="0" y1="0" x2="0" y2="1">
+								<stop offset="0%" stopColor="#0ea5e9" stopOpacity={0.4} />
+								<stop offset="100%" stopColor="#0ea5e9" stopOpacity={0.02} />
+							</linearGradient>
+						</defs>
+						<CartesianGrid vertical={false} stroke="currentColor" strokeOpacity={0.1} />
 						<XAxis
 							dataKey="timestamp"
 							angle={-45}
@@ -100,8 +106,16 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 								/>
 							}
 						/>
-						<Line type="monotone" dataKey="value" strokeWidth={2} dot={{ r: 2 }} />
-					</LineChart>
+						<Area
+							type="monotone"
+							dataKey="value"
+							stroke="#0ea5e9"
+							strokeWidth={2}
+							fill="url(#waterFill)"
+							dot={false}
+							activeDot={{ r: 4 }}
+						/>
+					</AreaChart>
 				</ResponsiveContainer>
 			</div>
 		</div>

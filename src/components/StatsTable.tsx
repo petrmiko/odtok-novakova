@@ -18,36 +18,24 @@ export default function StatsTable({ data, tooltipFormatter, numberFormatter }: 
 				: sortedValues[Math.floor(data.length / 2)].value
 			: undefined
 
-	const formattedMax = maxValue !== undefined ? numberFormatter.format(maxValue) : 'N/A'
-	const formattedMedian = medianValue !== undefined ? numberFormatter.format(medianValue) : 'N/A'
+	const formatCm = (value: number | undefined) =>
+		value !== undefined ? `${numberFormatter.format(value)} cm` : 'N/A'
 
 	return (
-		<div className="mt-4">
-			<table className="w-full border-collapse">
-				<thead>
-					<tr className="border-b">
-						<th className="text-left p-2"></th>
-						<th className="text-left p-2">Hladina [cm]</th>
-						<th className="text-left p-2">Čas(y)</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr className="border-b">
-						<td className="p-2 font-semibold">Maximum</td>
-						<td className="p-2">{formattedMax}</td>
-						<td className="p-2">
-							{maxTimestamps.map((timestamp) => (
-								<div key={timestamp.toISOString()}>{tooltipFormatter.format(timestamp)}</div>
-							))}
-						</td>
-					</tr>
-					<tr className="border-b">
-						<td className="p-2 font-semibold">Median</td>
-						<td className="p-2">{formattedMedian}</td>
-						<td className="p-2">-</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+		<dl className="mt-6 grid gap-4 sm:grid-cols-2">
+			<div className="rounded-xl border border-border bg-background p-4">
+				<dt className="text-sm text-muted">Maximum</dt>
+				<dd className="text-2xl font-semibold tabular-nums">{formatCm(maxValue)}</dd>
+				{maxTimestamps.map((timestamp) => (
+					<dd key={timestamp.toISOString()} className="text-sm text-muted">
+						{tooltipFormatter.format(timestamp)}
+					</dd>
+				))}
+			</div>
+			<div className="rounded-xl border border-border bg-background p-4">
+				<dt className="text-sm text-muted">Medián</dt>
+				<dd className="text-2xl font-semibold tabular-nums">{formatCm(medianValue)}</dd>
+			</div>
+		</dl>
 	)
 }
