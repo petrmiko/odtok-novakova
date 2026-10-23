@@ -46,7 +46,7 @@ async function provideTimeSeriesData(
 	const diffInDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
 	const dataType = diffInDays > 31 ? 'dataD' : 'data'
 
-	const url = new URL('https://api.chytrejsiobec.cz/api/device/data/log')
+	const url = new URL('https://dobrany.chytrejsimesto.cz/api/device/data/log')
 	url.searchParams.append('devID', 'SCC.IOT.CZ00256552OWN-6D6F555331FFFF58')
 	url.searchParams.append('type', dataType)
 	url.searchParams.append('dateFrom', start.toISOString())
