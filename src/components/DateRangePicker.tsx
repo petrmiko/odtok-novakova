@@ -15,9 +15,7 @@ interface DateRangePickerProps {
 	onDateRangeChange: (startDate: Date | null, endDate: Date | null) => void
 }
 
-export default function DateRangePicker({
-	onDateRangeChange,
-}: DateRangePickerProps) {
+export default function DateRangePicker({ onDateRangeChange }: DateRangePickerProps) {
 	const userLocale = useMemo(() => {
 		const browserLocale = navigator.language.toLowerCase()
 		const languageCode = browserLocale.split('-')[0]
@@ -36,15 +34,15 @@ export default function DateRangePicker({
 	}
 
 	const labels = useMemo(() => {
-		const translations: { [key: string]: { start: string, end: string } } = {
+		const translations: { [key: string]: { start: string; end: string } } = {
 			cs: {
 				start: 'Od',
-				end: 'Do'
+				end: 'Do',
 			},
 			en: {
 				start: 'From',
-				end: 'To'
-			}
+				end: 'To',
+			},
 		}
 
 		const languageCode = userLocale.split('-')[0]
@@ -64,8 +62,8 @@ export default function DateRangePicker({
 	}
 
 	return (
-		<LocalizationProvider 
-			dateAdapter={AdapterDateFns} 
+		<LocalizationProvider
+			dateAdapter={AdapterDateFns}
 			adapterLocale={localeMap[userLocale.split('-')[0]]}
 		>
 			<div className="flex items-center gap-4 mb-6">

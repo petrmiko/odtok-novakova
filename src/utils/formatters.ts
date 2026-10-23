@@ -24,5 +24,4 @@ export const getNumberFormatter = () => {
 		minimumFractionDigits: 1,
 		maximumFractionDigits: 1,
 	})
-
 }

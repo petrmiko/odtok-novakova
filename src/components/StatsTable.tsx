@@ -4,22 +4,19 @@ interface StatsTableProps {
 	numberFormatter: Intl.NumberFormat
 }
 
-export default function StatsTable({ 
-	data, 
-	tooltipFormatter, 
-	numberFormatter 
-}: StatsTableProps) {
-	const maxValue = data.length > 0 ? Math.max(...data.map(item => item.value)) : undefined
+export default function StatsTable({ data, tooltipFormatter, numberFormatter }: StatsTableProps) {
+	const maxValue = data.length > 0 ? Math.max(...data.map((item) => item.value)) : undefined
 	const maxTimestamps = data
-		.filter(item => item.value === maxValue)
-		.map(item => new Date(item.timestamp))
-	
+		.filter((item) => item.value === maxValue)
+		.map((item) => new Date(item.timestamp))
+
 	const sortedValues = [...data].sort((a, b) => a.value - b.value)
-	const medianValue = data.length > 0 
-		? data.length % 2 === 0
-			? (sortedValues[data.length / 2 - 1].value + sortedValues[data.length / 2].value) / 2
-			: sortedValues[Math.floor(data.length / 2)].value
-		: undefined
+	const medianValue =
+		data.length > 0
+			? data.length % 2 === 0
+				? (sortedValues[data.length / 2 - 1].value + sortedValues[data.length / 2].value) / 2
+				: sortedValues[Math.floor(data.length / 2)].value
+			: undefined
 
 	const formattedMax = maxValue !== undefined ? numberFormatter.format(maxValue) : 'N/A'
 	const formattedMedian = medianValue !== undefined ? numberFormatter.format(medianValue) : 'N/A'
@@ -39,11 +36,9 @@ export default function StatsTable({
 						<td className="p-2 font-semibold">Maximum</td>
 						<td className="p-2">{formattedMax}</td>
 						<td className="p-2">
-							{maxTimestamps.map(timestamp => 
-								<div key={timestamp.toISOString()}>
-									{tooltipFormatter.format(timestamp)}
-								</div>
-							)}
+							{maxTimestamps.map((timestamp) => (
+								<div key={timestamp.toISOString()}>{tooltipFormatter.format(timestamp)}</div>
+							))}
 						</td>
 					</tr>
 					<tr className="border-b">

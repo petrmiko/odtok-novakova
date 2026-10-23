@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 	title: 'Hladina odtoku Novákova Dobřany',
-	description: 'Historie hladiny vody v odtokovém příkopu za rodinnámi domky v Novákově ulici v Dobřanech.',
+	description:
+		'Historie hladiny vody v odtokovém příkopu za rodinnámi domky v Novákově ulici v Dobřanech.',
 }
 
 export default function RootLayout({
@@ -24,11 +25,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-			>
-				{children}
-			</body>
+			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
 		</html>
 	)
 }

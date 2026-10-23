@@ -13,7 +13,7 @@ Water level monitoring dashboard (Next.js App Router, MUI + Tailwind, Recharts, 
 ## Setup
 
 ```bash
-mise install   # installs bun 1.3.12
+mise install   # installs bun (version per mise.toml)
 bun install    # installs dependencies
 ```
 
@@ -30,4 +30,4 @@ bun install    # installs dependencies
 
 - Tabs for indentation
 - No comments — prefer self-documenting names
-- Linter config in `eslint.config.mjs` is authoritative; defer to it
+- Linter config in `.oxlintrc.json` and formatter config in `.oxfmtrc.json` are authoritative; defer to them

@@ -30,7 +30,13 @@ interface CustomTooltipProps {
 	numberFormatter: Intl.NumberFormat
 }
 
-function CustomTooltip({ active, payload, tooltipLabel, dateFormatter, numberFormatter }: CustomTooltipProps) {
+function CustomTooltip({
+	active,
+	payload,
+	tooltipLabel,
+	dateFormatter,
+	numberFormatter,
+}: CustomTooltipProps) {
 	if (active && payload && payload.length) {
 		const date = new Date(payload[0].payload.originalTimestamp)
 		const formattedDate = dateFormatter.format(date)
@@ -73,37 +79,30 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 		<div className="w-full">
 			<div className="h-[400px]">
 				<ResponsiveContainer width="100%" height="100%">
-					<LineChart
-						data={formattedData}
-						margin={{ left: 10, right: 10, top: 10, bottom: 10 }}
-					>
-					<CartesianGrid strokeDasharray="3 3" stroke="#444"/>
-					<XAxis
-						dataKey="timestamp"
-						angle={-45}
-						textAnchor="end"
-						height={70}
-						interval="preserveStartEnd"
-					/>
-					<YAxis
-						width={80}
-						tickFormatter={(value) => `${numberFormatter.format(value)} cm`}
-					>
-						<Label
-							value={translations.label}
-							angle={-90}
-							position="left"
+					<LineChart data={formattedData} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
+						<CartesianGrid strokeDasharray="3 3" stroke="#444" />
+						<XAxis
+							dataKey="timestamp"
+							angle={-45}
+							textAnchor="end"
+							height={70}
+							interval="preserveStartEnd"
 						/>
-					</YAxis>
-					<Tooltip content={<CustomTooltip tooltipLabel={translations.tooltip} dateFormatter={dateFormatter} numberFormatter={numberFormatter} />} />
-					<Line
-						type="monotone"
-						dataKey="value"
-						strokeWidth={2}
-						dot={{ r: 2 }}
-					/>
-				</LineChart>
-			</ResponsiveContainer>
+						<YAxis width={80} tickFormatter={(value) => `${numberFormatter.format(value)} cm`}>
+							<Label value={translations.label} angle={-90} position="left" />
+						</YAxis>
+						<Tooltip
+							content={
+								<CustomTooltip
+									tooltipLabel={translations.tooltip}
+									dateFormatter={dateFormatter}
+									numberFormatter={numberFormatter}
+								/>
+							}
+						/>
+						<Line type="monotone" dataKey="value" strokeWidth={2} dot={{ r: 2 }} />
+					</LineChart>
+				</ResponsiveContainer>
 			</div>
 		</div>
 	)

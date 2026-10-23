@@ -9,12 +9,12 @@ import StatsTable from '@/components/StatsTable'
 import { getDateFormatters, getNumberFormatter } from '@/utils/formatters'
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-    },
-  },
+	defaultOptions: {
+		queries: {
+			refetchOnWindowFocus: false,
+			retry: 1,
+		},
+	},
 })
 
 interface TimeSeriesData {
@@ -24,7 +24,7 @@ interface TimeSeriesData {
 
 function HomePage() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-	
+
 	const theme = useMemo(
 		() =>
 			createTheme({
@@ -32,14 +32,14 @@ function HomePage() {
 					mode: prefersDarkMode ? 'dark' : 'light',
 				},
 			}),
-		[prefersDarkMode]
+		[prefersDarkMode],
 	)
 
 	const [dateRange, setDateRange] = useState<[Date, Date]>(() => [
 		new Date(Date.now() - 24 * 3600000),
 		new Date(),
 	])
-	
+
 	const { data, isLoading, error } = useQuery({
 		queryKey: ['timeseries', dateRange[0], dateRange[1]],
 		queryFn: async (): Promise<TimeSeriesData[]> => {
@@ -55,7 +55,11 @@ function HomePage() {
 		},
 	})
 
-	const { data: todayData, isLoading: isTodayLoading, error: todayError } = useQuery({
+	const {
+		data: todayData,
+		isLoading: isTodayLoading,
+		error: todayError,
+	} = useQuery({
 		queryKey: ['today'],
 		queryFn: async (): Promise<TimeSeriesData[]> => {
 			const params = new URLSearchParams()
@@ -71,10 +75,7 @@ function HomePage() {
 		},
 	})
 
-	const handleDateRangeChange = (
-		startDate: Date | null,
-		endDate: Date | null
-	) => {
+	const handleDateRangeChange = (startDate: Date | null, endDate: Date | null) => {
 		if (startDate && endDate) {
 			setDateRange([startDate, endDate])
 		}
@@ -87,7 +88,12 @@ function HomePage() {
 			<main className="flex min-h-screen flex-col items-center p-8">
 				<h1 className="text-3xl font-bold mb-8">Odtok Novákova</h1>
 				{isTodayLoading && <p className="text-xl font-bold mb-8">Načítám poslední měření...</p>}
-				{!todayError && todayData && todayData?.length > 0 && <h2 className="text-xl font-bold mb-8">{todayData.at(-1)!.value}cm v {dateFormatter.format(new Date(todayData.at(-1)!.timestamp))}</h2>}
+				{!todayError && todayData && todayData?.length > 0 && (
+					<h2 className="text-xl font-bold mb-8">
+						{todayData.at(-1)!.value}cm v{' '}
+						{dateFormatter.format(new Date(todayData.at(-1)!.timestamp))}
+					</h2>
+				)}
 				<DateRangePicker onDateRangeChange={handleDateRangeChange} />
 				{isLoading && <p>Načítám vývoj v čase...</p>}
 				{error && (
@@ -98,7 +104,7 @@ function HomePage() {
 				{!isLoading && !error && data && (
 					<div className="w-full max-w-6xl">
 						<TimeSeriesChart data={data} />
-						<StatsTable 
+						<StatsTable
 							data={data}
 							tooltipFormatter={getDateFormatters().dateFormatter}
 							numberFormatter={getNumberFormatter()}

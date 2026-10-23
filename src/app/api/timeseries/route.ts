@@ -34,13 +34,8 @@ interface ApiResponse {
 	data: TimeSeriesItem[]
 }
 
-async function provideTimeSeriesData(
-	startDate?: string,
-	endDate?: string
-): Promise<ApiResponse> {
-	const start = startDate
-		? new Date(startDate)
-		: new Date(Date.now() - 24 * 3600000)
+async function provideTimeSeriesData(startDate?: string, endDate?: string): Promise<ApiResponse> {
+	const start = startDate ? new Date(startDate) : new Date(Date.now() - 24 * 3600000)
 	const end = endDate ? new Date(endDate) : new Date()
 
 	const diffInDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
@@ -69,8 +64,7 @@ async function provideTimeSeriesData(
 		console.error('Error fetching data:', error)
 		return {
 			status: 'error',
-			err_msg:
-				error instanceof Error ? error.message : 'Unknown error occurred',
+			err_msg: error instanceof Error ? error.message : 'Unknown error occurred',
 			err_code: 500,
 			data: [],
 		}
@@ -82,17 +76,14 @@ export async function GET(request: Request) {
 	const startDate = searchParams.get('startDate')
 	const endDate = searchParams.get('endDate')
 
-	const response = await provideTimeSeriesData(
-		startDate || undefined,
-		endDate || undefined
-	)
+	const response = await provideTimeSeriesData(startDate || undefined, endDate || undefined)
 
 	if (response.status !== 'ok') {
 		return NextResponse.json(response, { status: 500 })
 	}
 
 	const chartData = response.data.map((item: TimeSeriesItem) => ({
-		timestamp: item.created.ts.replace('Z', ''),  // provides time with Z UTC suffix but is NOT in UTC
+		timestamp: item.created.ts.replace('Z', ''), // provides time with Z UTC suffix but is NOT in UTC
 		value: item.data.waterHeight,
 	}))
 
