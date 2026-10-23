@@ -55,7 +55,13 @@ async function provideTimeSeriesData(startDate?: string, endDate?: string): Prom
 		})
 
 		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`)
+			const body = await response.json().catch(() => null)
+			return {
+				status: 'error',
+				err_msg: body?.err_msg ?? `HTTP error! status: ${response.status}`,
+				err_code: response.status,
+				data: [],
+			}
 		}
 
 		const data = await response.json()
@@ -79,7 +85,7 @@ export async function GET(request: Request) {
 	const response = await provideTimeSeriesData(startDate || undefined, endDate || undefined)
 
 	if (response.status !== 'ok') {
-		return NextResponse.json(response, { status: 500 })
+		return NextResponse.json(response, { status: response.err_code >= 400 ? response.err_code : 500 })
 	}
 
 	const chartData = response.data.map((item: TimeSeriesItem) => ({
