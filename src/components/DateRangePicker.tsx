@@ -2,9 +2,17 @@ import { useState, useMemo } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { Stack } from '@mui/material'
+import { Chip, Stack } from '@mui/material'
 import { cs, enUS, Locale } from 'date-fns/locale'
-import { startOfDay, endOfDay } from 'date-fns'
+import { startOfDay, endOfDay, subWeeks, subMonths, subYears } from 'date-fns'
+
+const presets: { label: string; start: (now: Date) => Date }[] = [
+	{ label: 'Dnes', start: (now) => now },
+	{ label: 'Poslední týden', start: (now) => subWeeks(now, 1) },
+	{ label: 'Poslední měsíc', start: (now) => subMonths(now, 1) },
+	{ label: 'Posledních 6 měsíců', start: (now) => subMonths(now, 6) },
+	{ label: 'Poslední rok', start: (now) => subYears(now, 1) },
+]
 
 const localeMap: { [key: string]: Locale } = {
 	cs: cs,
@@ -27,9 +35,11 @@ export default function DateRangePicker({ onDateRangeChange }: DateRangePickerPr
 		endOfDay(new Date()),
 	])
 	const [startDate, endDate] = dateRange
+	const [activePreset, setActivePreset] = useState<string | null>(null)
 
 	const handleDateChange = (update: [Date | null, Date | null]) => {
 		setDateRange(update)
+		setActivePreset(null)
 		onDateRangeChange(update[0], update[1])
 	}
 
@@ -66,7 +76,22 @@ export default function DateRangePicker({ onDateRangeChange }: DateRangePickerPr
 			dateAdapter={AdapterDateFns}
 			adapterLocale={localeMap[userLocale.split('-')[0]]}
 		>
-			<div className="flex items-center gap-4 mb-6">
+			<div className="flex flex-col gap-4 mb-6">
+				<Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
+					{presets.map(({ label, start }) => (
+						<Chip
+							key={label}
+							label={label}
+							color={activePreset === label ? 'primary' : 'default'}
+							variant={activePreset === label ? 'filled' : 'outlined'}
+							onClick={() => {
+								const now = new Date()
+								handleDateChange([startOfDay(start(now)), endOfDay(now)])
+								setActivePreset(label)
+							}}
+						/>
+					))}
+				</Stack>
 				<Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
 					<DatePicker
 						label={labels.start}
